@@ -62,20 +62,7 @@ tabsParent.addEventListener("click", (event) => {
   }
 });
 
-// const autoSlideShow = (e) => {
-//   const target = e.target;
-//
-//   if (target.classList.contains("tabheader__item")) {
-//     tabs.forEach((item, i) => {
-//       if (target === item) {
-//         hideTabContent();
-//         showTabContent(slideIndex);
-//       }
-//     });
-//   }
-// }
 
-// autoSlideShow();
 setInterval(autoSlider, 2000);
 
 const modal = document.querySelector(".modal");
@@ -121,48 +108,71 @@ window.addEventListener("scroll", openModalScroll)
 
 closeModalBtn.addEventListener("click", closeModal);
 
-const forms = document.querySelector("form");
-const message = {
-  loading: "Загрузка",
-  success: "успех",
-  fail: "ошибка",
+const forms = document.querySelectorAll("form");
+
+const postData = async (url, data) => {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-type" : "application/json",
+    },
+    body: data,
+  });
+    return res;
 };
+// const message = {
+//   loading: "Загрузка",
+//   success: "успех",
+//   fail: "ошибка",
+// };
 
-forms.forEach((item) => {
-  postData(item);
-});
-
-const postData = (form) => {
+const bindPostData = (form) => {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const messageBlock = document.createElement("div");
-    messageBlock.textContent = message.loading;
-    form.append(messageBlock);
-
-    const request = new XMLHttpRequest();
-    request.open("POST", "server.php");
-    request.setRequestHeader("Content-type", "application/json");
-
+//     const messageBlock = document.createElement("div");
+//     messageBlock.textContent = message.loading;
+//     form.append(messageBlock);
+//
+//     const request = new XMLHttpRequest();
+//     request.open("POST", "server.php");
+//     request.setRequestHeader("Content-type", "application/json");
+//
     const formData = new FormData(form);
-
-    const object = {};
+    const obj = {};
 
     formData.forEach((item, i) => {
-      object[i] = item;
+      obj[i] = item;
     });
-
-    const json = JSON.stringify(object);
-
-    request.send(json);
-
-    request.addEventListener("load", () => {
-      if (request.status === 200) {
-        console.log(request.response);
-        messageBlock.textContent = message.success;
-      } else {
-        messageBlock.textContent = message.fail;
-      }
-    });
+//
+//     const json = JSON.stringify(obj);
+//
+//     request.send(json);
+//
+//     request.addEventListener("load", () => {
+//       if (request.status === 200) {
+//         console.log(request.response);
+//         messageBlock.textContent = message.success;
+//       } else {
+//         messageBlock.textContent = message.fail;
+//       }
+//     });
+    postData("server.php", JSON.stringify(obj))
+        .then((data) => {
+          console.log(data)
+          window.alert("Success")
+        })
+        .catch(() => {
+          console.log("error")
+          window.alert("Error")
+        })
+        .finally(() => {
+          console.log("ok")
+          window.alert("OK")
+        })
   });
 };
+
+forms.forEach((item) => {
+  bindPostData(item);
+});
